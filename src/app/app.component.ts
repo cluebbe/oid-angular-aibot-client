@@ -1,12 +1,21 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { AuthService } from './auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [RouterModule, CommonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'oid-angular-aibot-client';
+  auth = inject(AuthService);
+  data: any;
+
+  constructor() {
+    if (this.auth.isLoggedIn()) {
+      this.auth.getProtectedData().subscribe((res) => (this.data = res));
+    }
+  }
 }
