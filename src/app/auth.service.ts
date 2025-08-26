@@ -13,11 +13,8 @@ export class AuthService {
 
   private configure() {
     this.oauthService.configure(authConfig);
-    this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
-      if (!this.oauthService.hasValidAccessToken()) {
-        this.oauthService.initCodeFlow();
-      }
-    });
+    this.oauthService.loadDiscoveryDocumentAndTryLogin();
+
   }
 
   login() {
