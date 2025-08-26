@@ -1,20 +1,29 @@
 import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authConfig } from './auth-config';
-import { HttpClient } from '@angular/common/http'; // Added import
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private oauthService: OAuthService, private http: HttpClient) { // Injected HttpClient
+  constructor(
+    private oauthService: OAuthService,
+    private http: HttpClient,
+    private router: Router
+  ) {
     this.configure();
   }
 
   private configure() {
     this.oauthService.configure(authConfig);
-    this.oauthService.loadDiscoveryDocumentAndTryLogin();
-
+    // Only try to login if redirected back from the auth server
+    this.oauthService.loadDiscoveryDocumentAndTryLogin().then(() => {
+      if (this.oauthService.hasValidAccessToken()) {
+        this.router.navigate(['/chat']);
+      }
+    });
   }
 
   login() {

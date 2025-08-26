@@ -5,6 +5,6 @@ export const authConfig: AuthConfig = { // Changed to oauthConfig
   clientId: 'angular-client',
   responseType: 'code',
   scope: 'openid profile email',
-  redirectUri: window.location.origin + '/chat',
+  redirectUri: window.location.origin + '/callback',
   requireHttps: false, // Disable for localhost
 };
