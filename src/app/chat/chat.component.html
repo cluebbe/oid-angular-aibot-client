@@ -1,6 +1,6 @@
 <div>
   
-  <p *ngIf="auth.isLoggedIn()">Token: {{ auth.getToken() }}</p>
+  <p>Token: {{ auth.getToken() }}</p>
   <p *ngIf="data">{{ data.message }}</p>
-  <p *ngIf="!auth.isLoggedIn()">Please log in to access the chat functionality.</p>"
+
 </div>
