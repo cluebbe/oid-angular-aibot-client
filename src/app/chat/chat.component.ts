@@ -14,7 +14,7 @@ export class ChatComponent {
 
   constructor() {
     if (this.auth.isLoggedIn()) {
-      this.auth.getProtectedData().subscribe((res) => (this.data = res));
+      this.auth.sendMessage("hello","Arnold Schwarzenegger").subscribe((res) => {console.log(res); this.data = res});
     }
   }
 }

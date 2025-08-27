@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { authConfig } from './auth-config';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -42,9 +43,44 @@ export class AuthService {
     return this.oauthService.hasValidAccessToken();
   }
 
-  getProtectedData() {
+ getProtectedData() {
     return this.http.get<any>('http://localhost:4200/api/protected', {
       headers: { Authorization: `Bearer ${this.oauthService.getAccessToken()}` },
     });
+  }
+
+    sendMessage(userMessage: string, personToImpersonate: string) {
+    const userMessagePretext = "Please answer the following question as if you were an actor impersonating " + personToImpersonate + " (100 Tokens max): "
+    const apiKey = this.oauthService.getAccessToken();
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    });
+
+    const requestBody = {
+      model: 'grok-2-1212',
+      messages: [
+        {
+          role: 'user',
+          content: userMessagePretext + userMessage,
+        },
+      ],
+      temperature: 0.7,
+      max_tokens: 100,
+      stream: false,
+    };
+
+    return this.http.post('http://localhost:3000/send-message', requestBody, { headers }).pipe(catchError(this.handleError) );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    if( error.status === 0){
+      console.error('A client-side or network error occurred:', error.error);
+    } else {
+      console.error('Backend returned code ' + error.status, error.error);
+    }
+
+    return throwError(() => new Error('Something bad happened; please try again later.', {cause: error.error}));
   }
 }
